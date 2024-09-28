@@ -10,6 +10,10 @@ const {
   signUpValidations,
   validateSignup,
 } = require("../middleware/signUpMiddleware");
+const {
+  loginValidations,
+  validateLogin,
+} = require("../middleware/loginMiddleware");
 const db = require("../database/database");
 
 router.post(
@@ -45,26 +49,33 @@ router.post(
   }
 );
 
-router.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
-  const query = "SELECT * FROM User WHERE email=?";
-  const connection = await db.getConnection();
-  await connection.query("USE TASK_MANAGEMENT");
-  const [users] = await connection.query(query, [email]);
-  if (users.length !== 1) {
-    return res.status(400).send("INVALID EMAIL OR PASSWORD");
-  }
-  const user = users[0];
-  const isMatch = await bcrypt.compare(password, user.password);
+router.post(
+  "/api/login",
+  [...loginValidations, validateLogin],
+  async (req, res) => {
+    const { email, password } = req.body;
+    const query = "SELECT * FROM User WHERE email=?";
+    const connection = await db.getConnection();
+    await connection.query("USE TASK_MANAGEMENT");
+    const [users] = await connection.query(query, [email]);
+    if (users.length !== 1) {
+      return res.status(400).send("INVALID EMAIL OR PASSWORD");
+    }
+    const user = users[0];
+    const isMatch = await bcrypt.compare(password, user.password);
 
-  connection.release();
-  if (!isMatch) return res.status(404).send("INVALID EMAIL OR PASSWORD");
-  else {
-    const token = await generateToken(user.email);
-    req.session.user = user;
-    return res.status(200).header("auth-token", token).send("Login Successful");
+    connection.release();
+    if (!isMatch) return res.status(404).send("INVALID EMAIL OR PASSWORD");
+    else {
+      const token = await generateToken(user.email);
+      req.session.user = user;
+      return res
+        .status(200)
+        .header("auth-token", token)
+        .send("Login Successful");
+    }
   }
-});
+);
 
 router.get("/api/profile", [auth], (req, res) => {
   const user = _.pick(req.session.user, ["username"]);
@@ -83,7 +94,7 @@ router.post("/api/logout", (req, res) => {
   });
 });
 
-router.get("/api/allusers", [authorization], async (req, res) => {
+router.get("/api/allusers", [auth, authorization], async (req, res) => {
   const connection = await db.getConnection();
   await connection.query("USE TASK_MANAGEMENT");
   const query = "SELECT * FROM User";
