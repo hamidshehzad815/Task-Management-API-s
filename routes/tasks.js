@@ -14,7 +14,7 @@ router.post(
   async (req, res) => {
     const { title, description, dueDate, priority, status, assignedTo } =
       req.body;
-    const user = req.body.user;
+    const user = req.user;
     const connection = await db.getConnection();
     connection.query("USE TASK_MANAGEMENT");
     const query =
@@ -43,7 +43,7 @@ router.put(
   [auth, ...requestValidations, validateRequest],
   async (req, res) => {
     const { taskId, title, description, dueDate, priority, status } = req.body;
-    const user = req.body.user;
+    const user = req.user;
     const connection = await db.getConnection();
     connection.query("USE TASK_MANAGEMENT");
     const query =
@@ -72,7 +72,7 @@ router.put(
   [auth, authorization, ...requestValidations, validateRequest],
   async (req, res) => {
     const { taskId, title, description, dueDate, priority, status } = req.body;
-    const user = req.body.user;
+    const user = req.user;
     const connection = await db.getConnection();
     connection.query("USE TASK_MANAGEMENT");
     const query =
@@ -97,7 +97,7 @@ router.put(
 router.get("/api/myTasks", [auth], async (req, res) => {
   const connection = await db.getConnection();
   connection.query("USE TASK_MANAGEMENT");
-  const user = req.session.user;
+  const user = req.user;
   const query = "SELECT * FROM Task WHERE createdBy = ? or assignedTo = ?";
   const [tasks] = await connection.query(query, [user.userId, user.userId]);
   connection.release();
@@ -106,7 +106,7 @@ router.get("/api/myTasks", [auth], async (req, res) => {
   return res.status(200).send(tasks);
 });
 
-router.get("/api/allTasks", [auth,authorization], async (req, res) => {
+router.get("/api/allTasks", [auth, authorization], async (req, res) => {
   const connection = await db.getConnection();
   connection.query("USE TASK_MANAGEMENT");
   const query = "SELECT * FROM Task";
@@ -121,7 +121,7 @@ router.get(
   "/api/taskFilter/:columnName/:filterBy",
   [auth],
   async (req, res) => {
-    const user = req.body.user;
+    const user = req.user;
     const filterBy = req.params.filterBy;
     const columnName = req.params.columnName;
     const connection = await db.getConnection();
@@ -136,7 +136,7 @@ router.get(
 );
 
 router.get("/api/taskBy/:sortingOrder", [auth], async (req, res) => {
-  const user = req.body.user;
+  const user = req.user;
   const sortingOrder = req.params.sortingOrder;
   const connection = await db.getConnection();
   connection.query("USE TASK_MANAGEMENT");

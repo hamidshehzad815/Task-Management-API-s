@@ -18,8 +18,8 @@ CREATE TABLE User (
 CREATE TABLE Task (
     taskId int NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
-    description VARCHAR(500),
-    dueDate DATE,
+    description VARCHAR(500) DEFAULT NULL,
+    dueDate DATE DEFAULT NULL,
     priority ENUM('Low', 'Medium', 'High') DEFAULT 'Low',
     status ENUM('Pending', 'Completed') DEFAULT 'Pending',
     createdBy int NOT NULL,

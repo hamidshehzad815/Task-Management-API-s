@@ -59,26 +59,27 @@ router.post(
     await connection.query("USE TASK_MANAGEMENT");
     const [users] = await connection.query(query, [email]);
     if (users.length !== 1) {
-      return res.status(400).send("INVALID EMAIL OR PASSWORD");
+      return res.status(401).send({ message: "INVALID EMAIL OR PASSWORD" });
     }
     const user = users[0];
     const isMatch = await bcrypt.compare(password, user.password);
 
     connection.release();
-    if (!isMatch) return res.status(404).send("INVALID EMAIL OR PASSWORD");
+    if (!isMatch)
+      return res.status(401).send({ message: "INVALID EMAIL OR PASSWORD" });
     else {
       const token = await generateToken(user.email);
       req.session.user = user;
       return res
         .status(200)
         .header("auth-token", token)
-        .send("Login Successful");
+        .send({ message: "Login Successful" });
     }
   }
 );
 
 router.get("/api/profile", [auth], (req, res) => {
-  const user = _.pick(req.session.user, ["username"]);
+  const user = _.omit(req.user, ["password"]);
   return res.status(200).send(user);
 });
 

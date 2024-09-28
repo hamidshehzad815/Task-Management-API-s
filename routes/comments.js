@@ -6,7 +6,7 @@ const authorization = require("../middleware/authorization");
 
 router.post("/api/createComment", [auth], async (req, res) => {
   const { taskId, commentBody } = req.body;
-  const user = req.body.user;
+  const user = req.user;
   const connection = await db.getConnection();
   connection.query("USE TASK_MANAGEMENT");
   const query = "INSERT INTO Comment VALUES(DEFAULT,?,?,?,DEFAULT)";
