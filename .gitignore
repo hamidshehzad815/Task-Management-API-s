@@ -5,3 +5,4 @@ node_modules
 # ignore package-lock.json,pacakge.json
 package-lock.json
 package.json
+test.js
