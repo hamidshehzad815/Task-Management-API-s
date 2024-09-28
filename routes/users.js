@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth");
 const authorization = require("../middleware/authorization");
 const generateToken = require("../services/generateToken");
-const sendEmail = require("../services/sendEmail");
+const { registraionEmail: sendEmail } = require("../services/sendEmail");
 const _ = require("lodash");
 const {
   signUpValidations,

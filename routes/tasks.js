@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../database/database");
 const auth = require("../middleware/auth");
 const authorization = require("../middleware/authorization");
+const { taskAssignedEmail: sendEmail } = require("../services/sendEmail");
 
 router.post("/api/createTask", [auth], async (req, res) => {
   const { title, description, dueDate, priority, status, assignedTo } =
@@ -21,6 +22,11 @@ router.post("/api/createTask", [auth], async (req, res) => {
     user.userId,
     assignedTo,
   ]);
+  if (assignedTo) {
+    const query = "SELECT email FROM User WHERE userId = ?";
+    const [email] = await connection.query(query, [assignedTo]);
+    sendEmail(user, email[0].email);
+  }
   connection.release();
   return res.status(200).send({ result, message: "Task Createdd" });
 });
