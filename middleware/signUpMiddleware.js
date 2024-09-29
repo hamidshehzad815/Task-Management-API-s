@@ -5,17 +5,24 @@ const signUpValidations = [
     .exists()
     .withMessage("username is required")
     .isString()
-    .withMessage("username must be a string"),
+    .withMessage("username must be a string")
+    .trim()
+    .notEmpty()
+    .withMessage("Username cannot be empty after trimming"),
   body("email")
     .exists()
-    .withMessage("Mustbe a valid email")
+    .withMessage("Email is required")
+    .trim()
     .isEmail()
     .withMessage("Must be a valid email"),
   body("password")
     .exists()
     .withMessage("Password is Required")
     .isLength({ min: 10 })
-    .withMessage("Password must be greater than 10 characters"),
+    .withMessage("Password must be greater than 10 characters")
+    .trim()
+    .notEmpty()
+    .withMessage("Password cannot be empty after trimming"),
 ];
 
 function validateSignup(req, res, next) {

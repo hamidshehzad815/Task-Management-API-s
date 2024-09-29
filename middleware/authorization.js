@@ -1,6 +1,21 @@
+const ADMIN_ROLE = "Admin";
+
 module.exports = function (req, res, next) {
-  if (req.session.user.role !== "Admin") {
-    return res.status(401).send({ message: "Cannot access to endpoint" });
+  const user = req?.user; // Using optional chaining to prevent errors
+
+  if (!user) {
+    console.warn("Unauthorized access attempt: User object not found.");
+    return res.status(401).send({ message: "User not authenticated" });
   }
+
+  if (user.role !== ADMIN_ROLE) {
+    console.warn(
+      `Unauthorized access attempt: User ${user.id} tried to access admin endpoint.`
+    );
+    return res
+      .status(403)
+      .send({ message: "Access to this endpoint is forbidden" });
+  }
+
   next();
 };

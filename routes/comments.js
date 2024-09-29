@@ -8,7 +8,6 @@ router.post("/api/createComment", [auth], async (req, res) => {
   const { taskId, commentBody } = req.body;
   const user = req.user;
   const connection = await db.getConnection();
-  connection.query("USE TASK_MANAGEMENT");
   const query = "INSERT INTO Comment VALUES(DEFAULT,?,?,?,DEFAULT)";
   const result = await connection.query(query, [
     taskId,
@@ -22,12 +21,10 @@ router.post("/api/createComment", [auth], async (req, res) => {
 router.get("/api/getComments/:taskId", [auth], async (req, res) => {
   const taskId = req.params.taskId;
   const connection = await db.getConnection();
-  connection.query("USE TASK_MANAGEMENT");
   const query = "SELECT * FROM Comment WHERE taskId = ?";
   const result = await connection.query(query, [taskId]);
   connection.release();
   return res.status(200).send(result[0]);
 });
-
 
 module.exports = router;

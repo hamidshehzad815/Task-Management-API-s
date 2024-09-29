@@ -4,13 +4,15 @@ const loginValidations = [
   body("email")
     .exists()
     .withMessage("Email is required")
+    .trim()
     .isEmail()
     .withMessage("Must be a valid email"),
   body("password")
     .exists()
-    .withMessage("Password is Required")
-    .isLength({ min: 10 })
-    .withMessage("Password must be greater than 10 characters"),
+    .withMessage("Password is required")
+    .trim()
+    .notEmpty()
+    .withMessage("Password cannot be empty after trimming"),
 ];
 
 function validateLogin(req, res, next) {
