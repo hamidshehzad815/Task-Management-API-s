@@ -6,6 +6,8 @@ const authorization = require("../middleware/authorization");
 
 router.post("/api/createComment", [auth], async (req, res) => {
   const { taskId, commentBody } = req.body;
+  if (!taskId || !commentBody)
+    return res.status(400).send({ message: "field missing" });
   const user = req.user;
   const connection = await db.getConnection();
   const query = "INSERT INTO Comment VALUES(DEFAULT,?,?,?,DEFAULT)";
@@ -24,6 +26,8 @@ router.get("/api/getComments/:taskId", [auth], async (req, res) => {
   const query = "SELECT * FROM Comment WHERE taskId = ?";
   const result = await connection.query(query, [taskId]);
   connection.release();
+  if (result.length === 0)
+    return res.status(404).send({ message: "No comments found" });
   return res.status(200).send(result[0]);
 });
 
