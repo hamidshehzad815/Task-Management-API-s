@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-module.exports = async function (email) {
+module.exports = async function (user) {
   const payload = {
-    email,
+    ...user,
   };
   const secretKey = process.env.SECRET_KEY;
   const options = {

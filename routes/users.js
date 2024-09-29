@@ -27,7 +27,6 @@ router.post(
     const insertQuery = "INSERT INTO User VALUES(DEFAULT,?,?,?,?)";
 
     const connection = await db.getConnection();
-    await connection.query("USE TASK_MANAGEMENT");
     const [users] = await connection.query(emailCheckQuery, [email, username]);
     if (users.length > 0) {
       return res
@@ -37,7 +36,7 @@ router.post(
 
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    const result = await connection.query(insertQuery, [
+    await connection.query(insertQuery, [
       username,
       email,
       hashedPassword,
@@ -45,7 +44,7 @@ router.post(
     ]);
     sendEmail(email);
     connection.release();
-    res.status(200).send(result);
+    res.status(200).send({ message: "Confirmation Email sent" });
   }
 );
 
@@ -56,7 +55,6 @@ router.post(
     const { email, password } = req.body;
     const query = "SELECT * FROM User WHERE email=?";
     const connection = await db.getConnection();
-    await connection.query("USE TASK_MANAGEMENT");
     const [users] = await connection.query(query, [email]);
     if (users.length !== 1) {
       return res.status(401).send({ message: "INVALID EMAIL OR PASSWORD" });
@@ -68,42 +66,46 @@ router.post(
     if (!isMatch)
       return res.status(401).send({ message: "INVALID EMAIL OR PASSWORD" });
     else {
-      const token = await generateToken(user.email);
-      req.session.user = user;
-      return res
-        .status(200)
-        .header("auth-token", token)
-        .send({ message: "Login Successful" });
+      const token = await generateToken(_.omit(user, ["password"]));
+      return res.status(200).json({ token });
     }
   }
 );
 
 router.get("/api/profile", [auth], (req, res) => {
-  const user = _.omit(req.user, ["password"]);
-  return res.status(200).send(user);
+  const user = req.user;
+  return res.status(200).json(user);
 });
 
 router.post("/api/logout", (req, res) => {
-  if (!req.session.user) {
-    return res.status(400).send("You are not logged in");
-  }
-  req.session.destroy((err) => {
-    if (err) {
-      return res.send("Error Logging out");
-    }
-    return res.send("You have logged out!");
-  });
+  return res.json({ message: "You have logged out!" });
 });
 
 router.get("/api/allusers", [auth, authorization], async (req, res) => {
   const connection = await db.getConnection();
-  await connection.query("USE TASK_MANAGEMENT");
   const query = "SELECT * FROM User";
   const [users] = await connection.query(query);
   if (users.length === 0) {
-    return res.status(400).send({ message: "No User Found" });
+    return res.status(404).send({ message: "No User Found" });
   }
   connection.release();
   return res.status(200).send(users);
 });
+
+router.delete(
+  "/api/delete-user/:userId",
+  [auth, authorization],
+  async (req, res) => {
+    const userId = req.params.userId;
+    if (!userId) return res.status(404).send({ message: "UserId missing" });
+    const connection = await db.getConnection();
+    const query = "DELETE FROM User WHERE userId = ?";
+    const result = await connection.query(query, [userId]);
+    if (result[0].affectedRows === 0) {
+      return res.status(404).send({ message: "Invalid userId" });
+    }
+    connection.release();
+    return res.status(200).send({ message: "User deleted" });
+  }
+);
 module.exports = router;

@@ -1,9 +1,10 @@
 const { body, validationResult } = require("express-validator");
 
-const requestValidations = [
-  body("taskId").optional().isInt().withMessage("Task ID must be an integer"),
+const validations = [
+  body("taskId").isInt().withMessage("Task ID must be an integer"),
 
   body("title")
+    .optional()
     .exists()
     .withMessage("Title is required")
     .isString()
@@ -41,7 +42,7 @@ const requestValidations = [
     .withMessage("Assigned to must be an integer"),
 ];
 
-function validateRequest(req, res, next) {
+function validate(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).send({ errors: errors.array() });
@@ -50,6 +51,6 @@ function validateRequest(req, res, next) {
 }
 
 module.exports = {
-  requestValidations,
-  validateRequest,
+  validations,
+  validate,
 };
