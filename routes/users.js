@@ -17,7 +17,7 @@ const {
 const db = require("../database/database");
 
 router.post(
-  "/api/signup",
+  "/signup",
   [...signUpValidations, validateSignup],
   async (req, res) => {
     const { username, email, password } = req.body;
@@ -49,7 +49,7 @@ router.post(
 );
 
 router.post(
-  "/api/login",
+  "/login",
   [...loginValidations, validateLogin],
   async (req, res) => {
     const { email, password } = req.body;
@@ -72,16 +72,16 @@ router.post(
   }
 );
 
-router.get("/api/profile", [auth], (req, res) => {
+router.get("/profile", [auth], (req, res) => {
   const user = req.user;
   return res.status(200).json(user);
 });
 
-router.post("/api/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   return res.json({ message: "You have logged out!" });
 });
 
-router.get("/api/allusers", [auth, authorization], async (req, res) => {
+router.get("/allusers", [auth, authorization], async (req, res) => {
   const connection = await db.getConnection();
   const query = "SELECT * FROM User";
   const [users] = await connection.query(query);
@@ -93,7 +93,7 @@ router.get("/api/allusers", [auth, authorization], async (req, res) => {
 });
 
 router.delete(
-  "/api/delete-user/:userId",
+  "/delete-user/:userId",
   [auth, authorization],
   async (req, res) => {
     const userId = req.params.userId;

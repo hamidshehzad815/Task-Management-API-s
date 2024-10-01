@@ -4,7 +4,7 @@ const db = require("../database/database");
 const auth = require("../middleware/auth");
 const authorization = require("../middleware/authorization");
 
-router.post("/api/createComment", [auth], async (req, res) => {
+router.post("/createComment", [auth], async (req, res) => {
   const { taskId, commentBody } = req.body;
   if (!taskId || !commentBody)
     return res.status(400).send({ message: "field missing" });
@@ -20,7 +20,7 @@ router.post("/api/createComment", [auth], async (req, res) => {
   return res.status(200).send({ result, message: "Comment Created" });
 });
 
-router.get("/api/getComments/:taskId", [auth], async (req, res) => {
+router.get("/getComments/:taskId", [auth], async (req, res) => {
   const taskId = req.params.taskId;
   const connection = await db.getConnection();
   const query = "SELECT * FROM Comment WHERE taskId = ?";

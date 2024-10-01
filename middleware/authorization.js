@@ -1,7 +1,7 @@
 const ADMIN_ROLE = "Admin";
 
 module.exports = function (req, res, next) {
-  const user = req?.user; // Using optional chaining to prevent errors
+  const user = req?.user;
 
   if (!user) {
     console.warn("Unauthorized access attempt: User object not found.");

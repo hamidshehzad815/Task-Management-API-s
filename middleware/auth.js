@@ -1,9 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
-  // if (!req.session.user) {
-  //   return res.status(401).send({ message: "You are not logged in" });
-  // }
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!authHeader)
@@ -19,7 +16,7 @@ module.exports = function (req, res, next) {
       }
       return res.status(401).send({ message: "Token verification failed" });
     }
-    req.user = decodedToken; // use the decoded token, not req.session.user
+    req.user = decodedToken;
     next();
   });
 };

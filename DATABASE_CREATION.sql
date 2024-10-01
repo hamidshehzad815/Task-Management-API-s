@@ -47,3 +47,5 @@ Create TABLE Comment (
 SELECT * from `User`;
 
 SELECT * from `Task` ORDER BY priority
+
+
