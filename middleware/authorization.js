@@ -1,4 +1,4 @@
-const ADMIN_ROLE = "Admin";
+const ADMIN_ROLE = "admin";
 
 module.exports = function (req, res, next) {
   const user = req?.user;

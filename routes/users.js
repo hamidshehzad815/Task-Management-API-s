@@ -21,7 +21,7 @@ router.post(
   [...signUpValidations, validateSignup],
   async (req, res) => {
     const { username, email, password } = req.body;
-    const role = email == process.env.EMAIL_USER ? "Admin" : "User";
+    const role = email == process.env.EMAIL_USER ? "admin" : "user";
     const emailCheckQuery =
       "SELECT * FROM User Where email = ? OR username = ?";
     const insertQuery = "INSERT INTO User VALUES(DEFAULT,?,?,?,?)";

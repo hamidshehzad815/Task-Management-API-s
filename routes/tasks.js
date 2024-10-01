@@ -83,7 +83,7 @@ router.put(
     const { taskId, title, description, dueDate, priority, status } = req.body;
     const user = req.user;
 
-    const isAdmin = user.role === "Admin";
+    const isAdmin = user.role === "admin";
 
     const connection = await db.getConnection();
 
@@ -143,7 +143,7 @@ router.get("/taskFilter/:columnName/:filterBy", [auth], async (req, res) => {
   const columnName = req.params.columnName;
 
   const allowedColumns = ["status", "priority"];
-  if (!allowedColumns.includes(columnName)) {
+  if (!allowedColumns.includes(columnName.toLowerCase())) {
     return res.status(400).send({ message: "Invalid column name" });
   }
 

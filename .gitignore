@@ -2,8 +2,5 @@
 node_modules
 # ignore .env
 .env
-# ignore package-lock.json,pacakge.json
-package-lock.json
-package.json
 # i have a test.js file how to add it
 some

@@ -28,12 +28,14 @@ const validations = [
 
   body("priority")
     .optional()
-    .isIn(["Low", "Medium", "High"])
+    .toLowerCase()
+    .isIn(["low", "medium", "high"])
     .withMessage("Priority must be one of the following: Low, Medium, High"),
 
   body("status")
     .optional()
-    .isIn(["Pending", "Completed"])
+    .toLowerCase()
+    .isIn(["pending", "completed"])
     .withMessage("Status must be one of the following: Pending, Completed"),
 
   body("assignedTo")

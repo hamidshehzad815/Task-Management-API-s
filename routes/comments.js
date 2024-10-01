@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/database");
 const auth = require("../middleware/auth");
-const authorization = require("../middleware/authorization");
 
 router.post("/createComment", [auth], async (req, res) => {
   const { taskId, commentBody } = req.body;
   if (!taskId || !commentBody)
-    return res.status(400).send({ message: "field missing" });
+    return res
+      .status(400)
+      .send({
+        message: "field missing(taskId and commentBody both are required",
+      });
   const user = req.user;
   const connection = await db.getConnection();
   const query = "INSERT INTO Comment VALUES(DEFAULT,?,?,?,DEFAULT)";
